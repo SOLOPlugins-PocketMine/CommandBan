@@ -2,11 +2,11 @@
 
 namespace solo\commandban\command;
 
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use solo\commandban\CommandBan;
-use solo\commandban\CommandBanCommand;
 
-class CommandBanRemoveCommand extends CommandBanCommand{
+class CommandBanRemoveCommand extends Command{
 
   private $owner;
 
@@ -17,7 +17,7 @@ class CommandBanRemoveCommand extends CommandBanCommand{
     $this->owner = $owner;
   }
 
-  public function _execute(CommandSender $sender, string $label, array $args) : bool{
+  public function execute(CommandSender $sender, string $label, array $args) : bool{
     if(!$sender->hasPermission($this->getPermission())){
       $sender->sendMessage(CommandBan::$prefix . "이 명령을 사용할 권한이 없습니다.");
       return true;

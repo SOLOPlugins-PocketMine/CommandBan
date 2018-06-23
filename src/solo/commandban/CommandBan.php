@@ -28,26 +28,23 @@ class CommandBan extends PluginBase implements Listener{
     $this->getServer()->getPluginManager()->registerEvents($this, $this);
   }
 
-  public function onDisable(){
-
-  }
-
   public function save(){
     file_put_contents($this->getDataFolder() . "BanList.json", json_encode($this->banList));
   }
 
   public function addCommandBan(string $commandText){
-    $currentDimension =& $this->banList;
+    $currentDimension = &$this->banList;
     foreach(explode(" ", $commandText) as $arg){
       if(!isset($currentDimension[$arg])){
         $currentDimension[$arg] = [];
       }
-      $currentDimension =& $currentDimension[$arg];
+      $currentDimension = &$currentDimension[$arg];
     }
+    $currentDimension["*"] = [];
   }
 
   public function removeCommandBan(string $commandText){
-    $currentDimension =& $this->banList;
+    $currentDimension = &$this->banList;
     $args = explode(" ", $commandText);
     $key_end = count($args) - 1;
     foreach($args as $key_current => $arg){
@@ -55,13 +52,14 @@ class CommandBan extends PluginBase implements Listener{
         return false;
       }
       if($key_current !== $key_end){
-        $currentDimension =& $currentDimension[$arg];
+        $currentDimension = &$currentDimension[$arg];
         continue;
       }
-      if(!empty($currentDimension[$arg])){
+      if(isset($currentDimension[$arg]["*"])){
+        unset($currentDimension[$arg]);
+      }else{
         return false;
       }
-      unset($currentDimension[$arg]);
     }
     return true;
   }
@@ -71,16 +69,16 @@ class CommandBan extends PluginBase implements Listener{
   }
 
   public function checkCommand(string $commandText){
-    $currentDimension =& $this->banList;
+    $currentDimension = &$this->banList;
     foreach(explode(" ", $commandText) as $arg){
       if(isset($currentDimension[$arg])){
-        if((isset($currentDimension[$arg]["*"]) || empty($currentDimension[$arg]))){
+        if(isset($currentDimension[$arg]["*"])){
           return false;
         }
       }else{
         break;
       }
-      $currentDimension =& $currentDimension[$arg];
+      $currentDimension = &$currentDimension[$arg];
     }
     return true;
   }
